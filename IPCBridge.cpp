@@ -1,10 +1,12 @@
 #include "IPCBridge.h"
 
-#ifndef dprnt(...)
-#define dprnt(...)
+#ifndef dprnt
+#define dprnt(...) \
+	{}
 #endif
-#ifndef iprnt(...)
-#define iprnt(...)
+#ifndef iprnt
+#define iprnt(...) \
+	{}
 #endif
 
 #include <fstream>

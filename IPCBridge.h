@@ -21,6 +21,7 @@ struct IPCData {
 	bool hasMessage = false;
 	struct IPCMessage {
 		enum COMMAND { DISCONNECT = 0, PING, USER } cmd{};
+		int userCommand = 0;
 		unsigned int messageId = 0;
 		int params[3]{};
 		unsigned int dataSize = 0;
