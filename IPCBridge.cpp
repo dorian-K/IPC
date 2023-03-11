@@ -236,8 +236,6 @@ void IPCBridge::closeBridge() {
 	}
 }
 void IPCBridge::startLoopAsync() {
-	this->myMessageLoop = std::thread([]() { ipcBridge->beginMessageLoop(); });
+	this->myMessageLoop = std::thread([this]() { this->beginMessageLoop(); });
 }
 void IPCBridge::clearQueue() { this->outboundPacketQ.clear(); }
-
-std::shared_ptr<IPCBridge> ipcBridge;
