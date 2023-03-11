@@ -1,0 +1,16 @@
+---
+BasedOnStyle: Google
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+IndentCaseLabels: false
+ColumnLimit: 160
+BreakBeforeBraces: Attach
+AccessModifierOffset: -4
+PointerAlignment: Left
+MaxEmptyLinesToKeep: 1
+SortIncludes: CaseInsensitive
+SpaceAfterCStyleCast: true
+Standard: c++20
+---
+Language: Cpp
