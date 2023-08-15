@@ -57,7 +57,7 @@ private:
 	bool isClient = false;
 	inline IPCData& getInbound() { return isClient ? fileView->outgoing : fileView->incoming; }
 	inline IPCData& getOutbound() { return isClient ? fileView->incoming : fileView->outgoing; }
-	std::optional<std::function<void(std::shared_ptr<IPCData::IPCMessage>&)>> defaultPacketHandler;
+	std::function<void(std::shared_ptr<IPCData::IPCMessage>&)> defaultPacketHandler;
 	std::thread myMessageLoop;
 
 public:

@@ -155,14 +155,14 @@ void IPCBridge::beginMessageLoop() {
 							"throughput! cmd={}",
 							elapsed, this->getInbound().msg.cmd);
 					this->callbackMap.erase(msgId);
-				} else if (this->defaultPacketHandler.has_value()) {
+				} else if (this->defaultPacketHandler) {
 					auto e = std::make_shared<IPCData::IPCMessage>(this->getInbound().msg);
-					this->defaultPacketHandler.value()(e);
+					this->defaultPacketHandler(e);
 				} else
 					dprnt("no callback for msg id {}", msgId);
-			} else if (this->defaultPacketHandler.has_value()) {
+			} else if (this->defaultPacketHandler) {
 				auto e = std::make_shared<IPCData::IPCMessage>(this->getInbound().msg);
-				this->defaultPacketHandler.value()(e);
+				this->defaultPacketHandler(e);
 			}
 
 			this->getInbound().hasMessage = false;
