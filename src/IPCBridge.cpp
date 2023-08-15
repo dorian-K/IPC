@@ -118,10 +118,12 @@ void IPCBridge::beginMessageLoop() {
 		if (!this->getOutbound().hasMessage) {
 			if (!this->outboundPacketQ.empty()) {
 				hadSomethingToDo = true;
-				std::shared_ptr<IPCData::IPCMessage> msg;
-				this->outboundPacketQ.pop(msg);
+				EnqueuedMessage message;
+				this->outboundPacketQ.pop(message);
+				auto& msg = message.message;
 				memcpy(&this->getOutbound().msg, msg.get(), sizeof(IPCData::IPCMessage));
 				this->getOutbound().hasMessage = true;
+				if (message.promise.has_value()) message.promise->set_value();
 				lastOutboundMessage = std::chrono::high_resolution_clock::now();
 				if (msg->cmd != IPCData::IPCMessage::PING && false) dprnt("Ipcbridge: sent package");
 			} else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - lastOutboundMessage).count() > 1) {
@@ -203,7 +205,12 @@ void IPCBridge::enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk, std::func
 	this->enqueuePacket(pk);
 }
 
-void IPCBridge::enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk) { this->outboundPacketQ.push(pk); }
+std::future<void> IPCBridge::enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk) {
+	std::promise<void> promise;
+	std::future<void> future = promise.get_future();
+	this->outboundPacketQ.emplace(std::move(promise), pk);
+	return future;
+}
 
 void IPCBridge::closeBridge() {
 	this->hasInitialized = false;

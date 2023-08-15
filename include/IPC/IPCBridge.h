@@ -8,10 +8,12 @@
 
 #include <chrono>
 #include <functional>
+#include <future>
 #include <map>
 #include <mutex>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ConcurrentQueue.h"
 
@@ -47,7 +49,15 @@ private:
 		IPCData incoming;
 	}* fileView = nullptr;
 	bool isRunningLoop = false;
-	ConcurrentQueue<std::shared_ptr<IPCData::IPCMessage>> outboundPacketQ;
+	struct EnqueuedMessage {
+		std::optional<std::promise<void>> promise;
+		std::shared_ptr<IPCData::IPCMessage> message;
+		EnqueuedMessage() = default;
+		EnqueuedMessage(std::promise<void> promise, std::shared_ptr<IPCData::IPCMessage> message)
+			: promise(std::move(promise)),
+			  message(std::move(message)) {}
+	};
+	ConcurrentQueue<EnqueuedMessage> outboundPacketQ;
 	std::recursive_mutex callbackMapMutex;
 	std::mutex accessFileViewMutex;
 	std::condition_variable loopStopNotifier;
@@ -70,7 +80,7 @@ public:
 	bool isInitialized() { return this->hasInitialized; };
 	void enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk, std::function<void(std::shared_ptr<IPCData::IPCMessage>)> callback,
 					   std::function<void(void)> timeout, int timeoutSecs = 5);
-	void enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk);
+	std::future<void> enqueuePacket(std::shared_ptr<IPCData::IPCMessage> pk);
 	void closeBridge();
 	void setDefaultPacketHandler(std::function<void(std::shared_ptr<IPCData::IPCMessage>&)> packetHandler) { this->defaultPacketHandler = packetHandler; }
 	void clearQueue();

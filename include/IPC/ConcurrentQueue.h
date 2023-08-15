@@ -6,15 +6,16 @@
 template <typename T>
 class ConcurrentQueue {
 public:
-	bool push(T const& value) {
+	template<typename... Args>
+	bool emplace(Args&&... args) {
 		std::unique_lock<std::mutex> lock(this->mutex);
-		this->q.push(value);
+		this->q.emplace(std::forward<Args>(args)...);
 		return true;
 	}
 	bool pop(T& v) {
 		std::unique_lock<std::mutex> lock(this->mutex);
 		if (this->q.empty()) return false;
-		v = this->q.front();
+		v = std::move(this->q.front());
 		this->q.pop();
 		return true;
 	}
