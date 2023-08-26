@@ -70,7 +70,7 @@ bool IPCBridge::initBridge(bool initializeFile) {
 void IPCBridge::beginMessageLoop() {
 	if (this->fileView == nullptr) {
 		dprnt("invalid file view");
-		throw std::exception("invalid_file_view");
+		return;
 	}
 	dprnt("IPC Message loop started");
 	std::unique_lock g1(this->accessFileViewMutex);
