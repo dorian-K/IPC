@@ -13,3 +13,10 @@ add_library(IPC STATIC
 target_include_directories(IPC PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
     $<INSTALL_INTERFACE:include>)
+
+install(TARGETS IPC
+        EXPORT IPC-targets
+        RUNTIME DESTINATION "bin"
+        ARCHIVE DESTINATION "lib"
+        LIBRARY DESTINATION "lib"
+)
